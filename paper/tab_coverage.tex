@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\caption[Full candidate-benchmark coverage audit]{Full candidate-benchmark coverage on the raw 548-model snapshot, with the inclusion decision.
+Twelve benchmarks are primary, MMMU-Pro is demoted to sensitivity-only for sparse and multimodal
+coverage, and APEX-Agents is dropped below the sixty-model floor.}
+\label{tab:coverage}
+\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+Benchmark & Block & Models scored & Role \\
+\midrule
+GPQA Diamond & Academic & 513 & primary \\
+HLE & Academic & 509 & primary \\
+AA-Omniscience & Academic & 418 & primary \\
+MMMU-Pro & Academic & 204 & sensitivity only \\
+$\tau^2$-Bench & Economic & 428 & primary \\
+Terminal-Bench v2.1 & Economic & 121 & primary \\
+GDPval (Elo) & Economic & 117 & primary \\
+$\tau^3$-Banking & Economic & 112 & primary \\
+APEX-Agents & Economic & 26 & dropped (sparse) \\
+IFBench & Instruction-following & 437 & primary \\
+AA-LCR & Long-context & 441 & primary \\
+SciCode & Scientific-coding & 507 & primary \\
+CritPt & Scientific-coding & 422 & primary \\
+Terminal-Bench Hard & Scientific-coding & 421 & primary \\
+\bottomrule
+\end{tabular}
+\end{table}

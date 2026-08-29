@@ -1,0 +1,5 @@
+benchmark,point_absF1,boot_median,ci_lo,ci_hi,n_valid
+gdpval_elo,0.842,0.834,0.442,0.985,1000
+terminalbenchV21,1.006,0.966,0.658,1.049,1000
+tauBanking,0.542,0.541,0.214,0.869,1000
+tau2,0.499,0.479,0.103,0.779,1000

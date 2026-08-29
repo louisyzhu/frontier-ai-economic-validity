@@ -1,0 +1,17 @@
+{
+  "H4_pooled_vs_meanidx_dMSE": 0.03734162861183698,
+  "H4_pooled_vs_meanidx_excludes0": true,
+  "H4_cols_favouring_kfactor_vs_meanidx": "3/4 (GDPval, TerminalBenchV21, \u03c4\u00b3-Banking; \u03c4\u00b2-Bench includes 0)",
+  "H4_verdict": "SUPPORTED",
+  "K_factors": 3,
+  "n_LOBO": 96,
+  "outer_folds": 5,
+  "inner_folds": 5,
+  "learners": [
+    "ridge",
+    "elasticnet",
+    "rf",
+    "gbm"
+  ],
+  "bootstrap_B": 2000
+}

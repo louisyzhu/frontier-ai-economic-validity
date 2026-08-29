@@ -1,0 +1,30 @@
+\begin{table}[tb]
+\centering
+\caption[The twelve-benchmark battery]{\textbf{The twelve-benchmark battery, grouped by capability block,} with the construct each
+targets and its coverage in the analysis snapshot (models scored, of 421 retained). Higher is better for
+all; GDPval is an Elo rating, the others accuracy-type scores.}
+\label{tab:battery}
+\small
+\begin{tabular}{@{}llr@{}}
+\toprule
+Benchmark & Construct measured & Coverage \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Economic}}\\
+GDPval (Elo) & Paid professional task quality & 112 \\
+Terminal-Bench v2.1 & Terminal / agentic task completion & 121 \\
+$\tau^3$-Banking & Multi-step banking workflows & 112 \\
+$\tau^2$-Bench & Tool-use agentic tasks & 413 \\
+\multicolumn{3}{@{}l}{\textit{Academic}}\\
+GPQA Diamond & Graduate-level science QA & 421 \\
+HLE & Humanity's Last Exam (frontier knowledge) & 421 \\
+AA-Omniscience & Broad knowledge, hallucination-penalised & 418 \\
+\multicolumn{3}{@{}l}{\textit{Scientific coding}}\\
+SciCode & Research-level scientific coding & 421 \\
+CritPt & Physics problem solving & 419 \\
+Terminal-Bench Hard & Hard terminal coding tasks & 413 \\
+\multicolumn{3}{@{}l}{\textit{Long-context / instruction}}\\
+AA-LCR & Long-context reasoning & 420 \\
+IFBench & Instruction following & 417 \\
+\bottomrule
+\end{tabular}
+\end{table}

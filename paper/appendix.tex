@@ -1,0 +1,280 @@
+\appendix
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+\setcounter{subsection}{0}
+
+This appendix collects the material that supports the main text without interrupting its argument. It
+states the prediction algorithm (\ref{app:algorithm}) and the study's positionality (\ref{app:positionality}),
+gives the mathematical derivations behind the factor and prediction models (\ref{app:math}), the full
+coverage audit behind the inclusion rule (\ref{app:coverage}), the tuning grid (\ref{app:hyper}), the
+robustness battery (\ref{app:robust}), the reproducibility and provenance record (\ref{app:provenance}),
+and the supplementary figures referenced from the results (\ref{app:figures}). Each subsection opens with
+a one-line statement of what it supports and where the main text relies on it.
+
+\subsection{Leave-one-benchmark-out procedure}\label{app:algorithm}
+\emph{Supports Section~\ref{sec:task2}, which describes the protocol in words.}
+\input{alg_lobo}
+
+\subsection{Positionality, directionality, and threats to validity}\label{app:positionality}
+\emph{Supports Section~\ref{sec:hypotheses}, which summarises these commitments in one sentence.}
+Because a factor solution is identified only up to sign, the direction of every factor is a choice we
+state explicitly. We orient each factor to correlate positively with the model's mean standardised
+score, so that ``higher'' always means ``more capable'' and every loading in Table~\ref{tab:loadings}
+reads in the same direction. The point is not cosmetic, since an un-oriented solution could report the
+same economic factor with flipped signs and invite the opposite interpretation. The direction of the
+residualisation is equally deliberate. We regress scores on release date and analyse the residuals,
+which asks how much benchmark co-movement remains once the release date is known, and we do not run the
+reverse regression, because we make no claim that the general factor causes the calendar. Finally we fix
+the sign of the predictive contrast in advance, defining $\Delta\mathrm{MSE}$ as the single-index error
+minus the $k$-factor error so that a positive value favours the richer representation, and pre-register
+that H4 requires this positive interval to exclude zero rather than testing the reverse direction.
+
+Two threats to validity follow from the vantage point of the study. First, we observe only the models
+that vendors chose to submit to a public leaderboard, so the sample is a convenience sample of frontier
+systems and not a random draw, and the claims generalise to models on this leaderboard rather than to
+all models. Second, the economic benchmarks are newer and sparser, so any economic-specific structure is
+estimated from fewer observations and is more sensitive to the particular set of models that happen to
+carry those scores, a limitation we quantify with the wide bootstrap intervals in Table~\ref{tab:h4}
+rather than hide behind point estimates.
+
+\subsection{Mathematical derivations}\label{app:math}
+\emph{Supports Sections~\ref{sec:task1} and \ref{sec:task2}, which state the factor and prediction models
+in words and defer their formal statement to here.}
+
+\medskip
+\noindent\textbf{The exploratory factor-analysis model.}
+Let $\mathbf{z}\in\mathbb{R}^{p}$ be the vector of $p$ per-benchmark z-standardised scores for a model.
+The common-factor model represents it as a linear combination of $k$ latent factors
+$\mathbf{f}\in\mathbb{R}^{k}$ plus a benchmark-specific uniqueness $\boldsymbol{\varepsilon}$,
+
+\[
+  \mathbf{z} = \Lambda \mathbf{f} + \boldsymbol{\varepsilon},
+\]
+
+where $\Lambda\in\mathbb{R}^{p\times k}$ is the loading matrix. Assuming
+$\mathrm{Cov}(\mathbf{f})=\Phi$, $\mathrm{Cov}(\boldsymbol{\varepsilon})=\Psi$ diagonal, and
+$\mathrm{Cov}(\mathbf{f},\boldsymbol{\varepsilon})=\mathbf{0}$, the model implies the covariance
+structure
+
+\[
+  \Sigma = \Lambda \Phi \Lambda^{\top} + \Psi .
+\]
+
+\medskip
+\noindent
+The parameters are estimated by maximum likelihood under multivariate normality. The dominance statistic
+for H1 is computed on the unrotated solution, where the factors are orthogonal ($\Phi=I$) and each
+factor's contribution to common variance is its sum of squared loadings, $\sum_{j=1}^{p}\lambda_{jm}^2$,
+the $m$-th diagonal entry of $\Lambda^{\top}\Lambda$. The first factor's share of common variance is
+therefore
+\[
+  s_1 \;=\; \frac{\sum_{j=1}^{p}\lambda_{j1}^2}{\sum_{m=1}^{k}\sum_{j=1}^{p}\lambda_{jm}^2}
+        \;=\; \frac{(\Lambda^{\top}\Lambda)_{11}}{\operatorname{tr}(\Lambda^{\top}\Lambda)} .
+\]
+On the complete-case grid the three factors carry sums of squared loadings $7.79$, $2.34$, and $0.32$, so
+$s_1 = 7.79/10.45 = 74.5\%$. This is a factor-level share, distinct from a single benchmark's communality
+$\sum_{m}\lambda_{jm}^2$, which is a diagonal entry of $\Lambda\Lambda^{\top}$.
+
+\medskip
+\noindent\textbf{Oblique rotation and factor scores.}
+The maximum-likelihood solution is identified only up to rotation, so we apply an oblique oblimin
+rotation, which minimises a quartimin-type criterion on the loadings while allowing $\Phi\neq I$. Factor
+scores are then recovered by the Thurstone regression method,
+
+\[
+  \mathbf{W} = R^{-1}\Lambda, \qquad \hat{\mathbf{f}} = \mathbf{W}^{\top}\mathbf{z},
+\]
+
+where $R$ is the sample correlation matrix. In the prediction task $\mathbf{W}$ is estimated on the
+training fold only and applied to the held-out fold, which is the leakage-safe projection referenced in
+Section~\ref{sec:task2}.\label{app:scores}
+
+\medskip
+\noindent\textbf{Date and scale residualisation.}
+To separate general capability from a shared time trend, each standardised benchmark $z_j$ is regressed
+on model release date $d$ (and, in a subsample, on log training compute),
+
+\[
+  z_j = \beta_{0j} + \beta_{1j}\, d + r_j ,
+\]
+
+and the factor model is re-fitted on the residuals $r_j$. The change in the first factor's variance
+share between the raw and residualised fits, $74.5\%\rightarrow 59.6\%$, is the H2(ii) statistic.
+
+\medskip
+\noindent\textbf{Nested leave-one-benchmark-out estimator.}
+For an economic target $t$, the out-of-fold error of rung $r$ is
+
+\[
+  \mathrm{MSE}_r = \frac{1}{n}\sum_{i=1}^{n}\bigl(z_{it} - \hat{z}_{it}^{(-\kappa(i))}\bigr)^{2},
+\]
+
+where $\hat{z}_{it}^{(-\kappa(i))}$ is the prediction for model $i$ from a learner trained on the outer
+folds excluding the fold $\kappa(i)$ containing $i$, with hyperparameters chosen by an inner five-fold
+grid search on those training folds. The predictive-validity statistic contrasts the single-index rung
+against the $k$-factor rung,
+
+\[
+  \Delta\mathrm{MSE} = \mathrm{MSE}_{\text{ii}} - \mathrm{MSE}_{\text{iv}} .
+\]
+
+\medskip
+\noindent\textbf{Bootstrap confidence interval.}
+A 95\% interval for $\Delta\mathrm{MSE}$ is obtained by resampling the paired out-of-fold squared-error
+vectors with replacement $B=2000$ times and taking the 2.5th and 97.5th percentiles of the resampled
+differences. H4 is supported when this interval excludes zero.
+
+\subsection{Benchmark battery}\label{app:battery}
+\emph{Supports Section~\ref{sec:battery}, which names the battery and defers the full description here.}
+\input{tab_battery}
+
+\subsection{Full coverage audit}\label{app:coverage}
+\emph{Supports the inclusion rule of Section~\ref{sec:inclusion};} Table~\ref{tab:coverage} reports every
+candidate benchmark on the raw snapshot and the decision applied to it.
+
+\input{tab_coverage}
+
+\subsection{Hyperparameter grid and selections}\label{app:hyper}
+\emph{Supports Section~\ref{sec:task2} and the robustness claim of Section~\ref{sec:robustness}} that the
+H4 verdict does not hinge on a single tuning choice. The inner grid searched ridge and elastic-net
+$\alpha\in\{0.03,0.1,0.3,1,3\}$ with elastic-net $\ell_1$ ratio in $\{0.2,0.5,0.8\}$, random-forest
+depth in $\{4,8,\text{none}\}$ with $\{200,300\}$ trees, and gradient-boosting depth in $\{2,3\}$ with
+learning rate in $\{0.05,0.1\}$. Table~\ref{tab:hyper} reports the modal selection per rung.
+
+\input{tab_hyper}
+
+\subsection{Deviations from the pre-registered design}\label{app:deviations}
+\emph{Supports the reproducibility claims throughout.} A study that invokes pre-registration owes the
+reader an explicit account of where the delivery departed from the plan. Four departures matter. First,
+the registered primary unit was one row per base model at its best default configuration; the analysis
+instead uses all 421 configurations, with the deduplicated base-model dataset reported below as the
+registered R1 check rather than as the primary. Second, the registered factor-count rule is parallel
+analysis, which retains one factor; the three-factor solution that exhibits economic separation is a
+pre-declared exploratory over-extraction, and H3 is reported as not supported under the registration in
+consequence. Third, the taxonomy places Terminal-Bench Hard in scientific coding whereas the
+registration grouped it with Terminal-Bench v2.1 as economic; the residualised loadings show Hard at
+0.82 on the economic factor, so the assignment is genuinely contestable and the split is disclosed
+rather than silently adopted. Fourth, the delivered robustness checks are not the registered suite, and
+we label them distinctly below instead of renumbering a different battery onto the registered names.
+
+\subsection{Robustness checks}\label{app:robust}
+\emph{Supports Section~\ref{sec:robustness}.} We first report the one registered check that bears
+directly on the deduplication concern, then the additional checks actually delivered. \textbf{Registered
+R1 (configuration versus deduplicated).} We collapse the 421 configurations to one row per base model,
+keeping the best default configuration as the registration specified, operationalised as the
+highest-intelligence-index row for each base model after stripping reasoning, effort, and preview
+suffixes from the model name. This leaves 320 base models, of which 89 carry the complete battery. On this deduplicated grid the
+first-factor share rises to 90.2\% and the date-residualisation drop rises to 24.1 points, and the four
+economic loadings remain above 0.40, so deduplication strengthens H1 and H2(ii) and leaves the
+exploratory economic pattern intact. The configuration-level analysis is therefore the conservative
+choice for the structural headline. We also re-run the H4 predictive test on this deduplicated grid,
+where the bootstrap resampling unit is a distinct base model rather than a configuration. The pooled
+economic-block improvement of the $k$-factor representation over the single index is $+0.038$ with a 95\%
+interval of $[+0.020, +0.056]$, matching the configuration-level $+0.037$ and again excluding zero, so
+the predictive gain does not depend on treating near-duplicate configurations as exchangeable. \textbf{Delivered checks C1--C6.} (C1) A rank-based factor analysis
+raises the first-factor share to 94.5\%, and (C2) a logit transform of the bounded accuracy benchmarks
+raises it to 91.8\%, so H1 is not a Pearson artefact. (C3) On the 58-model compute-known subsample, the
+date-only residualisation drops the first-factor share by 16.5 points and adding log-compute jointly
+gives a smaller 9.3-point drop, so compute does not deepen the temporal correction beyond date on the
+same models. (C4) The three clustering algorithms agree on $k=2$. (C5) The predictor-ladder ordering
+holds on both the economic block and all twelve targets. (C6) The dominant-factor date fit is robust to
+the link function: a logistic fit gives $R^2=0.505$ against an ordinary-least-squares $R^2=0.477$, both
+clearing 0.30 with the first factor ranked strongest, so H2(i) does not depend on that modelling choice.
+(C7) The $k$-factor predictive advantage does not depend on the exploratory factor count. Sweeping the
+rung-(iv) predictor over $k \in \{2,3,4,5\}$, the improvement over the single index is positive at every
+count with a bootstrap interval excluding zero: $+0.021$ at $k=2$, $+0.037$ at the $k=3$ we use, $+0.058$
+at the criterion's $k=4$, and $+0.059$ at $k=5$, with pooled test $R^2$ rising from 0.79 to 0.83 across
+the range. The gain increases with $k$, so using the $k=3$ we adopt is conservative for this test
+relative to the criterion's $k=4$.
+The registered checks not run are R3 (FIML and MICE missingness sensitivity), R4 (replication of the
+single-factor foil then correction), R5 (reasoning-effort variants as a second scale axis), and R6 (the
+taxonomy swap test); each was deferred for space and is the natural next step given the deviations above,
+particularly R5 and R6, which bear on the effort and taxonomy departures.
+
+\subsection{Data provenance and reproducibility}\label{app:provenance}
+\emph{Supports Section~\ref{sec:source} and the reproducibility claims throughout.} The primary data set
+is the Artificial Analysis model leaderboard \cite{aa2026}, captured 2026-07-06 as a raw HTML snapshot
+and pinned by the SHA-256 hash recorded in the shipped manifest
+(\texttt{aa\_snapshot\_manifest.json}),
+\texttt{\seqsplit{6f19f8f08befaaf14cb2d9952e379404c39f246b52d7ae4d1c2aa44795404de6}}. The Data API endpoint returned
+HTTP 401 to our unauthenticated request, so the public leaderboard page was captured and the exact bytes
+stored, which makes every downstream number reproducible regardless of subsequent live-page drift. The
+secondary data set is Epoch AI Notable AI Models \cite{epoch2026}, released under CC-BY 4.0, used only
+for the scale robustness check. Both snapshots and every result table travel with the submission bundle.
+The complete pipeline is in a single notebook, \texttt{analysis.ipynb}, which regenerates all
+figures and tables from the pinned inputs, and the full code and data will be released at
+\url{https://github.com/louisyzhu/frontier-ai-economic-validity}.
+
+\subsection{Supplementary figures}\label{app:figures}
+\emph{Supports Sections~\ref{sec:inclusion}, \ref{sec:h1}, and \ref{sec:clustering}.}
+Figure~\ref{fig:density} documents the coverage audit behind the inclusion rule, Figure~\ref{fig:clusters}
+shows the model clustering, Figure~\ref{fig:diag} the GDPval regression diagnostics, Figure~\ref{fig:scree} gives the dimensionality evidence behind H1, and
+Figure~\ref{fig:dendro} the benchmark-level clustering behind Section~\ref{sec:clustering}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig3_clusters}
+  \caption[Model clustering into two capability tiers]{\textbf{Model clustering on the dense grid ($n=409$).} (a) Models in the space of the first
+  two factors, coloured by the two-cluster agglomerative solution; the factor axes are the dense-grid
+  solution fitted largely without the economic columns, so they index general capability tiers rather
+  than economic type. (b) Silhouette scores by $k$ for all three algorithms agree on $k=2$.}
+  \label{fig:clusters}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{appxfig_density}
+  \caption[Coverage and pairwise-overlap audit]{\textbf{Coverage audit behind the inclusion rule.}
+  (a) Number of models carrying a score on each candidate benchmark, coloured by capability block, with
+  the sixty-model inclusion floor marked. Four of the five economic benchmarks are retained; three of
+  them (Terminal-Bench v2.1, GDPval, and $\tau^3$-Banking) are scored on only 112 to 121 models, whereas
+  $\tau^2$-Bench and the academic core are each scored on four hundred or more. APEX-Agents, with 26
+  models, falls below the floor and is dropped. (b) Pairwise counts of models scored
+  on both benchmarks in a pair, which set the effective sample size for every correlation in the study.
+  This is the evidence for the two-grid design of Section~\ref{sec:inclusion}.}
+  \label{fig:density}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{suppl_eda_distributions}
+  \caption[Univariate score distributions and skewness]{\textbf{Univariate benchmark score
+  distributions.} (a) Raw score histograms for the twelve benchmarks, coloured by capability block;
+  $\gamma$ is the Fisher skewness. (b) Skewness ordered across benchmarks. Most benchmarks are bounded
+  accuracies in $[0,1]$, and several are strongly right-skewed (CritPt $\gamma=3.8$, HLE $\gamma=1.5$,
+  $\tau^3$-Banking $\gamma=0.9$), with scores concentrated near the floor. This boundedness motivates the
+  logit-transform robustness check of Section~\ref{sec:robustness}. GDPval (Elo) and AA-Omniscience are
+  on unbounded scales and are closer to symmetric.}
+  \label{fig:eda_dist}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig5_diagnostics}
+  \caption[Regression diagnostics for the GDPval model]{\textbf{Regression diagnostics for the GDPval $k$-factor ridge model, out-of-fold.}
+  (a) Predicted versus observed, on the identity line with $R^2=0.88$. (b) Residuals versus predicted
+  show no systematic trend. (c) The eight largest residuals, named; these are interpretable outliers
+  rather than evidence of misspecification.}
+  \label{fig:diag}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{suppl_scree_parallel}
+  \caption[Scree plot and Horn parallel analysis]{\textbf{Dimensionality of the battery.} (a) The scree plot of principal-component variance
+  shares drops sharply after the first component (79.4\%). (b) Horn parallel analysis retains a single
+  factor, since only the first observed eigenvalue (9.53) exceeds its random-data 95th percentile (1.79),
+  while the second (0.91) already falls below (1.57). Values are computed in the notebook and stored in
+  \texttt{parallel\_analysis.csv}.}
+  \label{fig:scree}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{suppl_benchmark_dendrogram}
+  \caption[Benchmark clustering dendrogram]{\textbf{Benchmark clustering by correlation distance} ($1-\rho$, average linkage). Ten of the
+  twelve benchmarks, including three of four economic benchmarks, fall in one block, with $\tau^2$-Bench
+  and IFBench branching separately.}
+  \label{fig:dendro}
+\end{figure}

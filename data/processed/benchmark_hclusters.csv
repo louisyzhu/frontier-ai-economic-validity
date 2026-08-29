@@ -1,0 +1,13 @@
+benchmark,block,hclust
+GDPval (Elo),Economic,1
+Terminal-Bench v2.1,Economic,1
+τ³-Banking,Economic,1
+τ²-Bench,Economic,2
+GPQA Diamond,Academic,1
+HLE,Academic,1
+AA-Omniscience,Academic,1
+SciCode,Scientific-coding,1
+CritPt,Scientific-coding,1
+Terminal-Bench Hard,Scientific-coding,1
+AA-LCR,Long-context,1
+IFBench,Instruction-following,3

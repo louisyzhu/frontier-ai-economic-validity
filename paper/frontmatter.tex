@@ -1,0 +1,36 @@
+% ---- Title and author block ----
+\title{\vspace{-1.5em}One Capability or Many?\\ Testing the Economic Validity of Frontier AI Evaluation}
+\author{Louis Yiven Zhu\\
+\small Department of Statistics, London School of Economics and Political Science}
+\date{}
+\maketitle
+
+\begin{abstract}
+\noindent
+Frontier-model leaderboards increasingly report ``economic'' benchmarks that aim to measure performance
+on professionally valuable work, such as software engineering, banking workflows, and other job-like
+tasks. Whether these benchmarks capture a distinct economic capability, or merely re-express the general
+capability signal that all benchmarks share as models improve, is a question of construct validity that
+has not been tested directly. We address it on a pinned snapshot of 421 frontier model configurations,
+of which 96 carry the complete twelve-benchmark battery that the structural analysis requires, framing
+benchmark validity as a latent-variable measurement problem. We combine exploratory factor analysis
+under an oblique rotation with a leave-one-benchmark-out predictive test, so that structural and
+predictive evidence are assessed against pre-registered thresholds. A single factor accounts for 74.5\%
+of common variance and is strongly associated with model release date ($R^2=0.51$); residualising on
+release date reduces that share to 59.6\%, a 14.9-point drop whose bootstrap interval straddles our
+15-point discriminance threshold, so the effect is indistinguishable from the threshold at this sample
+size. Our dimensionality rule retains a single factor, so the registered distinctiveness test is
+reported as not supported. When we extract more factors than that rule selects,
+the economic benchmarks do separate, and the separation carries out-of-sample weight, improving prediction
+of held-out economic scores over a single general-capability index on three of the four economic
+benchmarks (pooled $\Delta\mathrm{MSE}=0.037$, 95\% bootstrap interval $[0.019, 0.055]$). Economic
+benchmarks therefore carry limited, incremental validity. They refine a dominant progress factor at the
+margin while remaining largely explained by it. All hypotheses are pre-registered, the failing and
+near-threshold tests are reported as such, and every input is hash-pinned for exact reproduction.
+\end{abstract}
+
+\vspace{0.5em}
+\noindent\textbf{Keywords:} construct validity; benchmark evaluation; large language models; frontier AI;
+psychometrics; exploratory factor analysis; latent-variable models; economic capability; predictive
+validity; pre-registration; reproducibility.
+\vspace{0.5em}

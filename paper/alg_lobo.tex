@@ -1,0 +1,22 @@
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.95\linewidth}{
+\small
+\textbf{Procedure}\quad Leave-one-benchmark-out predictive validity with nested cross-validation\\[2pt]
+\hrule
+\vspace{3pt}
+\textbf{Input:} standardised score matrix $Z$ (models $\times$ benchmarks), economic targets $T$, learners $L$, rungs $R$.\\[2pt]
+\textbf{for} each target $t \in T$ \textbf{do}\\
+\hspace*{1em} partition models into 5 outer folds\\
+\hspace*{1em} \textbf{for} each outer fold $(\mathrm{train}, \mathrm{test})$ \textbf{do}\\
+\hspace*{2em} fit standardisation and EFA on $\mathrm{train}$ only; form Thurstone weights $W = R^{-1}\Lambda$\\
+\hspace*{2em} project $\mathrm{test}$ models through $W$; orient factors by train mean index\\
+\hspace*{2em} \textbf{for} each rung $r \in R$ and learner $\ell \in L$ \textbf{do}\\
+\hspace*{3em} tune $\ell$ by inner 5-fold grid search on $\mathrm{train}$; predict $\mathrm{test}$, store out-of-fold error\\
+\hspace*{1em} select best learner per rung by pooled out-of-fold RMSE\\
+compute $\Delta\mathrm{MSE} = \mathrm{MSE}(\text{rung ii}) - \mathrm{MSE}(\text{rung iv})$; bootstrap $B=2000$ for 95\% CI\\[2pt]
+\textbf{Output:} per-target and pooled $\Delta\mathrm{MSE}$ with confidence intervals (H4).
+}}
+\caption[Leave-one-benchmark-out prediction procedure]{The leave-one-benchmark-out procedure with leakage-safe factor projection and nested tuning.}
+\label{alg:lobo}
+\end{figure}

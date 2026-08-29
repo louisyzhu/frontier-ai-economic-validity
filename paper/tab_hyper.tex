@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\caption[Modal selected hyperparameters]{Modal hyperparameters selected by the inner five-fold grid search, reported as the plurality
+choice across all twelve leave-one-benchmark-out targets with the agreement count. The H4 verdict rests
+on fold-averaged out-of-fold errors, not on any single setting.}
+\label{tab:hyper}
+\small
+\begin{tabular}{@{}lllc@{}}
+\toprule
+Rung & Learner & Modal hyperparameters & Agreement \\
+\midrule
+(i) timing / scale & random forest & \texttt{max\_depth}=4, \texttt{min\_samples\_leaf}=3, \texttt{n\_estimators}=300 & 8/12 \\
+(ii) mean index & ridge & \texttt{alpha}=0.03 & 6/12 \\
+(iii) first factor & elastic net & \texttt{alpha}=0.03, \texttt{l1\_ratio}=0.2 & 5/12 \\
+(iv) $k$ factors & ridge & \texttt{alpha}=0.03 & 6/12 \\
+(v) $k$ factors + covariates & ridge & \texttt{alpha}=1 & 6/12 \\
+\bottomrule
+\end{tabular}
+\end{table}

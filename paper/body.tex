@@ -1,0 +1,494 @@
+% ======================================================================
+% Shared body content for both single- and two-column builds.
+% All numbers are verbatim from the canonical result CSVs in data/processed/.
+% ======================================================================
+
+\section{Introduction}\label{sec:intro}
+
+\subsection{Motivation and research questions}\label{sec:motivation}
+Public leaderboards have become the dominant instrument through which frontier language models are
+compared, procured, and governed, and a recent shift in what they report raises a measurement question
+with direct economic stakes. Alongside academic knowledge tests such as GPQA and Humanity's Last Exam,
+leaderboards now report \emph{economic} benchmarks such as GDPval, the $\tau$-Bench family, and
+terminal or agentic coding suites, all designed to proxy paid professional work and multi-step tool use.
+Whether these economic benchmarks deserve to be read as a separate column of the leaderboard depends
+on what they actually measure. If they capture a capability distinct from general test-taking ability,
+they carry information that a single ``intelligence'' score cannot, and reporting them separately is
+warranted. If instead they largely re-express one dominant axis of model progress, then a separate
+economic column overstates what the leaderboard knows. This is a question of construct validity, of
+whether a measurement captures the theoretical construct it claims to, and recent work argues that
+construct validity is systematically under-examined in AI evaluation \cite{bean2025,kearns2026}.
+
+We make the question empirical and answer it with two machine-learning tasks under a pre-registered design. A snapshot of frontier models scored across twelve benchmarks is framed as a psychometric problem
+in which benchmarks are items, models are respondents, and scores are the observed responses from which
+latent capability structure is inferred. Two complementary research questions organise the analysis. The
+first concerns structure. How many latent capabilities does the battery measure? Is a dominant axis
+merely an artefact of release date and scale, and do the economic benchmarks occupy a separable position
+once that axis is controlled? The second concerns prediction: does a multi-factor representation forecast
+a model's held-out economic-benchmark score more accurately than a single general-ability index? The
+first asks whether an economic factor exists in the correlational structure. The second asks whether, if
+it exists, it carries information that survives out of sample.
+
+\subsection{Related work}\label{sec:related}
+Our study sits within a small but growing literature that treats LLM benchmarks as measurement
+instruments open to measurement error. Bean et al.\ \cite{bean2025} review 445 benchmarks and
+find that only a minority justify their construct validity or apply any statistical test, which
+motivates precisely the kind of psychometric scrutiny we attempt here. Kearns \cite{kearns2026} makes that scrutiny quantitative. Fitting factor models to the Open LLM Leaderboard, Kearns shows that a dominant latent factor explains roughly 72\% of communal variance and correlates with model scale, while
+partialling scale out redistributes that variance across several factors. That $72\%\rightarrow41\%$
+correction is both the template for our residualisation and an external calibration
+point for our own numbers, though Kearns studies academic suites and does not isolate
+the economic column we target here. Our residualisation is designed to correct exactly the single-factor
+reading that leaves release timing and scale uncontrolled, named in the registered plan as robustness item R4.
+
+A second strand concerns how benchmark performance drifts over time. Akhtar, Reuel et al.\
+\cite{akhtar2026} find that benchmark age and test-set scale are the strongest predictors of lost
+discriminative power. Release date is therefore a first-order confound
+when capabilities are compared across a moving frontier, and we residualise on
+it before interpreting any factor structure. Reuel, Ghosh et al.\ \cite{reuel2026} map
+coverage gaps across social-impact evaluations and argue that the dimensions a suite surfaces are
+themselves a validity question. This supports our focus on whether economic capability is measured
+separately or folded into a general score.
+
+Methodologically, the contribution is the measurement design. It is built from established multivariate tools: exploratory factor analysis
+with oblique rotation \cite{thurstone1947}, parallel analysis \cite{horn1965} and the scree criterion
+\cite{cattell1966} for dimensionality, sampling-adequacy diagnostics \cite{kaiser1974,bartlett1950},
+silhouette \cite{rousseeuw1987} and gap-statistic \cite{tibshirani2001gap} cluster validation,
+regularised and tree-based regression \cite{hoerl1970,zou2005,breiman2001,friedman2001}, SHAP
+attribution \cite{lundberg2017}, and the bootstrap \cite{efron1993}. The regression learners and
+cross-validation use scikit-learn \cite{pedregosa2011}. The factor analysis uses the
+\texttt{factor\_analyzer} package and SHAP its own reference implementation \cite{lundberg2017}.
+
+\subsection{Contributions}\label{sec:contributions}
+The paper makes four contributions, and each addresses a gap the existing literature leaves open. First,
+it asks whether the \emph{economic}
+column of a frontier leaderboard measures a capability distinct from general test-taking, where earlier
+factor-analytic studies \cite{kearns2026} examined academic suites and treated capability as a single
+undifferentiated construct. The economic benchmarks that now drive procurement and policy claims have
+not previously been subjected to a construct-validity test, and that target is the paper's
+central novelty. Second, it isolates model release date as a first-order confound and residualises on it
+before reading any factor structure. What looks like one dominant
+capability axis is then shown to be substantially a temporal artefact. Third, it introduces a leave-one-benchmark-out predictive-validity test that recasts the distinctiveness question as an out-of-sample forecast. This is a stronger and more decision-relevant criterion than in-sample loading patterns, since a benchmark
+that adds nothing to prediction of held-out economic performance adds nothing a practitioner can use.
+Fourth, it delivers the whole analysis under a pre-registered protocol with hash-pinned inputs, reporting
+the near-threshold H2(ii) result and the not-supported H3 verdict alongside the confirmed ones
+and documenting every deviation from the registered plan.
+
+\subsection{Scope and non-goals}\label{sec:scope}
+Fixing scope in advance keeps the claims disciplined and guards against over-reading a cross-sectional,
+observational result. In scope is a construct-validity analysis of the economic benchmarks on a single
+hash-pinned leaderboard snapshot, using exploratory factor analysis and clustering for structure and a
+leave-one-benchmark-out regression for predictive validity, under four pre-registered hypotheses with
+pre-specified thresholds. Several extensions are left to future work. The analysis is exploratory, and makes no confirmatory claim. It claims no validated measurement model on fresh data, and it uses aggregate
+scores in place of item-level responses. It tests internal economic validity, the correlational and
+predictive structure, and leaves external economic impact such as professional usage or revenue for later
+work. Finally, it analyses one cross-section without saturation dynamics and treats published scores as
+given, so it makes no causal claim. The residualisation identifies date as a strong correlate of the
+general factor without establishing cause.
+
+\section{Data}\label{sec:data}
+
+\subsection{Source and provenance}\label{sec:source}
+The primary data set is a snapshot of the Artificial Analysis model leaderboard \cite{aa2026}, captured
+on 6 July 2026 directly from the public leaderboard page and pinned by its SHA-256 hash
+(\texttt{6f19f8\ldots04de6}; the full manifest appears in Appendix~\ref{app:provenance}). The snapshot
+contains 548 model configurations with per-benchmark scores, release dates, and provider metadata. A
+secondary source, the Epoch AI Notable AI Models data set (CC-BY 4.0) \cite{epoch2026}, supplies
+training-compute figures for a subset of models and is used only for a scale robustness check. Both
+snapshots travel with the submission bundle, so every number in this paper is reproducible from fixed
+inputs and neither source requires re-running a model.
+
+\subsection{The benchmark battery}\label{sec:battery}
+We analyse the twelve benchmarks that survive the coverage rule of Section~\ref{sec:inclusion}, grouped
+into five capability blocks. Four are economic benchmarks in the sense of proxying paid professional or
+agentic work, and the remainder span academic knowledge, scientific coding, long-context retrieval, and
+instruction following. Appendix Table~\ref{tab:battery} describes each benchmark, the construct it targets, and
+its coverage in the analysis snapshot.
+
+\subsection{Inclusion rule and analysis grids}\label{sec:inclusion}
+To avoid selecting benchmarks or models on the very outcomes under study, the coverage rule was fixed in
+advance. A benchmark is retained if at least sixty models carry a score, and a model is retained if it
+carries at least eight of the thirteen sufficiently-covered benchmarks. Thirteen of fourteen candidate
+benchmarks pass. One agentic benchmark, APEX-Agents with twenty-six models, is dropped for sparsity, and
+one multimodal benchmark, MMMU-Pro, is demoted to a sensitivity-only role. This leaves twelve primary
+benchmarks and 421 model configurations. These 421 rows are configurations, since a single base
+model can appear under several reasoning or effort settings. The registered analysis
+deduplicates to one row per base model as robustness check R1 (Appendix~\ref{app:robust}), and we retain
+the configuration level for the primary analysis as the more conservative choice.
+
+Because the economic benchmarks are scored on far fewer models than the academic core, a single grid
+cannot serve both analyses, so we work with two. The complete-case grid of 96 models scored on all
+twelve benchmarks is the only grid on which the economic block is complete and carries all structure
+hypotheses. The dense grid of 409 models scored on the nine near-universal benchmarks is used for model
+clustering, where sample size matters more than economic completeness. This completeness-versus-sample
+trade-off is the central data-design decision, and we flag it wherever it bears on a result.
+
+\subsection{Preprocessing and encoding}\label{sec:preproc}
+Three preprocessing decisions shape every downstream result. The benchmarks are reported on
+incommensurable scales. Some are accuracy fractions, one is a hallucination-penalised score, and GDPval
+is an Elo rating.\footnote{GDPval Elo ratings come from pairwise human preference comparisons on economically valuable tasks, so a higher rating means more often preferred, on a scale with no fixed maximum.} Each benchmark is therefore z-standardised before any analysis, using training-fold statistics only
+in the supervised task. Standardisation keeps the variance
+decomposition interpretable and stops the widest-range benchmark from dominating the covariance. GDPval
+is treated as a continuous target on its own standardised
+scale and excluded from the accuracy-only logit-transform check. The rung~(v) covariates
+enter as one-hot indicators for reasoning capability and open-weights status,
+log-parameters for parameter count, and a binary flag for undisclosed counts, so
+missingness is modelled as information and never silently imputed.
+
+\section{Exploratory data analysis}\label{sec:eda}
+Exploratory analysis is conducted on the modelling data before any model is fitted. The marking guidance asks for it, and the choices it surfaces (which grid, whether to residualise,
+how many factors to expect) should be informed by the data and never imposed on it. We examine
+coverage and missingness, correlation structure, and temporal patterns, summarised in
+Figure~\ref{fig:eda}. All standardisation and model fitting in later sections is performed on the
+training portion of each split only, so the exploratory views here characterise the data without leaking
+test information into the models.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig1_eda}
+  \caption[Exploratory data analysis of the benchmark battery]{\textbf{Exploratory data analysis of the twelve-benchmark battery on the complete-case grid
+  ($n=96$).} (a) Pairwise Spearman rank correlations, with benchmark labels coloured by capability
+  block, where almost every pair is strongly positive. (b) Per-benchmark scores (min--max scaled) against
+  model release date, showing capability rising steeply with time. (c) Coverage per benchmark across the
+  421 retained models, with the four economic benchmarks (red) scored on far fewer models than the
+  academic core.}
+  \label{fig:eda}
+\end{figure}
+
+Missingness is also structural. Newer agentic benchmarks are simply run on fewer
+models (Figure~\ref{fig:eda}c), so we use complete-case analysis on the two grids of
+Section~\ref{sec:inclusion}, and we do not impute values we would then be modelling. On the complete-case
+grid the Kaiser--Meyer--Olkin measure is 0.933, well above the 0.8 threshold \cite{kaiser1974}, and
+Bartlett's test of sphericity is decisively rejected \cite{bartlett1950}, so factor analysis is
+appropriate.
+
+The battery is highly collinear before any modelling, with a mean off-diagonal Spearman correlation of
+$\rho=0.79$ and every benchmark pair positive (Figure~\ref{fig:eda}a). The economic benchmarks correlate
+with the academic core almost as strongly as with one another. A dominant general factor would produce
+this near-block structure, and the structure analysis must explain it. A strong positive
+manifold is equally consistent with one underlying capability and with several capabilities that improve
+together over time. Distinguishing those readings is the purpose of the
+residualisation in Section~\ref{sec:task1}. The temporal view makes the ambiguity concrete. Scores rise
+steeply and jointly with release date (Figure~\ref{fig:eda}b), so release date is a confound for any
+claim that two benchmarks measure the same thing. Because the saturation literature identifies model and
+benchmark age as the strongest predictor of capability change \cite{akhtar2026}, we treat date as a
+first-class nuisance variable and residualise on it before interpreting factor structure.
+
+Beyond the correlation structure, the univariate distributions justify the transforms used later. Most benchmarks are bounded accuracies
+in $[0,1]$, and several are strongly right-skewed: CritPt has Fisher skewness 3.8, HLE 1.5, and
+$\tau^3$-Banking 0.9, with scores piling up near the floor (Appendix Figure~\ref{fig:eda_dist}). Two
+benchmarks are unbounded, GDPval on an Elo scale and AA-Omniscience on a penalised score, and these are
+closer to symmetric. Bounded skewed accuracies motivate the logit-transform robustness check in
+Section~\ref{sec:robustness}, and confirms the first-factor share is not an artefact of the raw scale.
+The low-scoring tails are weak models with genuinely low scores, so we retain all rows and
+address the boundedness through the transform and keep all outliers.
+
+\section{Methods}\label{sec:methods}
+The analysis runs two tasks on the same data. Task~1 is unsupervised and recovers and stress-tests the
+latent capability structure with three method families, namely principal-component analysis, exploratory
+factor analysis, and clustering. Task~2 is supervised and tests whether that structure has out-of-sample
+predictive value, using four regression learners under a leave-one-benchmark-out protocol. All features
+are per-benchmark z-standardised using training-set statistics only, and the full mathematical
+derivations are collected in Appendix~\ref{app:math}.
+
+\subsection{Task 1: latent structure}\label{sec:task1}
+Dimensionality is estimated by Horn's parallel analysis \cite{horn1965}, retaining factors whose
+eigenvalue exceeds the 95th percentile of eigenvalues from random data of the same shape, with the scree
+criterion \cite{cattell1966} as a visual cross-check. Parallel analysis is primary because it is the
+more conservative of the two on strongly collinear data. We prefer factor analysis to a PCA-only
+description because PCA components mix common and unique variance, whereas the common-factor model
+separates shared capability from benchmark-specific idiosyncrasy, which is the distinction a
+construct-validity question turns on.
+
+The factor model is a maximum-likelihood exploratory factor analysis with an oblique oblimin rotation
+\cite{thurstone1947}. We choose the oblique rotation because capability dimensions have no reason to
+be uncorrelated\footnote{An orthogonal rotation such as varimax forces the factors to be uncorrelated. On data with a strong general factor this spreads shared variance across several artificially independent axes, which would obscure the dominance we are trying to measure.} and the residualised factors are in fact strongly correlated (Section~\ref{sec:h3}). The model represents each standardised benchmark score as a linear combination of $k$ latent factors plus a benchmark-specific uniqueness, derived in Appendix~\ref{app:math}. We report the first factor's
+share of common variance as the dominance statistic, orienting every factor so higher means more
+capable.
+
+To separate a general capability from a shared time trend, each standardised benchmark is
+regressed on release date, and on a subsample also on training compute, and the factor analysis is
+re-fitted on the residuals. The change in the first factor's variance share measures how much of the
+apparent general factor is a date artefact, directly comparable to the $72\%\rightarrow41\%$ correction
+Kearns reports \cite{kearns2026}. This residualise-then-refit design is what lets the analysis
+distinguish a single date-driven manifold from a truly multidimensional capability space.
+
+Models are also clustered in factor-score space with $k$-means, Gaussian mixtures, and agglomerative
+Ward linkage, the cluster count selected by silhouette \cite{rousseeuw1987} and the gap statistic
+\cite{tibshirani2001gap}. Using three algorithms guards against a clustering that reflects one
+algorithm's inductive bias. The benchmarks are separately clustered by correlation distance $1-\rho$
+under average linkage, to test whether the economic benchmarks form a distinct branch.
+
+\subsection{Task 2: predictive validity}\label{sec:task2}
+The distinctiveness question is then recast as a forecast, asking whether a model's score on a held-out
+economic benchmark can be predicted from its behaviour on the others. The leave-one-benchmark-out (LOBO) protocol takes each economic benchmark as the target in turn. It predicts that target from representations of the remaining eleven on the $n=96$ complete-case grid. Success requires transfer across benchmarks without memorising a single column, which a conventional random split would not enforce. A five-rung
+predictor ladder of increasing richness makes the comparison concrete: rung~(i) uses release timing and
+scale only, rung~(ii) a single mean-score general index, rung~(iii) the first factor only, rung~(iv) the
+$k$ factors, and rung~(v) the $k$ factors plus model covariates. The contrast of interest is
+rung~(iv) or (v) against the single-index rung~(ii), because a multi-factor representation beating a
+single general index out of sample would show economic capability carries information the index does not.
+
+Each rung is fitted with four learners spanning the linear-regularised and non-linear tree families
+\cite{hastie2009}, ridge \cite{hoerl1970}, elastic net \cite{zou2005}, random forest \cite{breiman2001},
+and gradient boosting \cite{friedman2001}, so the ladder comparison is not confounded with a single
+model class. Hyperparameters are tuned by grid search in an inner five-fold cross-validation nested
+inside an outer five-fold split that supplies the reported out-of-fold error, so no test fold informs
+tuning or standardisation. A single non-nested cross-validation would let tuning peek at the evaluation
+folds and inflate every rung. We report both train and test RMSE and out-of-fold $R^2$.
+
+Crucially, because the factors are estimated quantities, they are re-estimated inside the loop. The factor analysis is fitted on each training fold only. The held-out fold is projected through the training-fold Thurstone factor-score weights $W = R^{-1}\Lambda$ (Appendix~\ref{app:scores}) and re-oriented by the
+training-fold mean index. This prevents the factor construction from ever seeing the models it is
+evaluated on, a leakage path a naive fit-on-all-data pipeline would silently open.
+
+For each economic target we compute $\Delta\mathrm{MSE} = \mathrm{MSE}(\text{single index}) -
+\mathrm{MSE}(k\ \text{factors})$, so that positive values favour the multi-factor representation. A 95\%
+confidence interval is obtained by bootstrap resampling the pooled out-of-fold errors \cite{efron1993}
+with $B=2000$ replicates. Hypothesis H4 is supported when the pooled interval excludes zero and a
+majority of the four economic targets individually favour the multi-factor model. The complete
+leave-one-benchmark-out procedure, with the leakage-safe factor re-estimation inside every fold, is
+stated in full as Figure~\ref{alg:lobo} in Appendix~\ref{app:algorithm}.
+
+\subsection{Hypotheses and pre-specified tests}\label{sec:hypotheses}
+The design fixes four hypotheses with quantitative thresholds before analysis, calibrated to the
+$72\%\rightarrow41\%$ result of Kearns \cite{kearns2026}. H1, dominance, holds that the first factor
+carries more than 50\% of common variance. H2, the date artefact, has two parts, the first being that
+the dominant factor's release-date $R^2$ is at least 0.30 and is the strongest of the factors, and the
+second that residualising on date lowers the first factor's share by at least fifteen percentage points.
+H3, economic distinctiveness, holds that after residualisation the four economic benchmarks load at
+least 0.40 on a common factor and exceed their cross-loadings. H4, predictive validity, holds that the
+multi-factor representation's $\Delta\mathrm{MSE}$ confidence interval excludes zero. We report every
+outcome, including H2(ii), which is indistinguishable from its threshold once uncertainty is attached,
+and H3, whose registered retention clause is not met.
+
+The study's positionality and directionality, covering factor sign orientation, the direction of residualisation, the pre-fixed sign of the predictive contrast, and the two sampling threats to validity, are set out in Appendix~\ref{app:positionality}.
+
+\subsection{Evaluation metrics and model selection}\label{sec:metrics}
+The two tasks are evaluated with metrics matched to their aims. For the unsupervised structure task the
+primary quantities are the first-factor communal-variance share for dominance, each factor's
+release-date fit for temporal confounding, and the residualised loading pattern for distinctiveness,
+with model adequacy checked beforehand by the Kaiser--Meyer--Olkin index and Bartlett's test. The number
+of factors is chosen by parallel analysis, as information criteria over-retain on
+strongly collinear data. The primary count is $k=1$, returned by
+parallel analysis, the Kaiser rule, and the scree elbow. The Bayesian information criterion alone prefers
+$k=4$, which we treat as over-retention. The three-factor solution used to probe economic distinctiveness
+is selected by none of these criteria. It is an exploratory over-extraction that asks whether an economic
+block would separate when more factors than the data support are forced out, and the choice of
+three is a documented deviation from the pre-registered plan (Appendix~\ref{app:deviations}). The
+predictive conclusion does not hinge on it. Sweeping the $k$-factor predictor over $k \in \{2,3,4,5\}$
+beats the single index at every count with all bootstrap intervals excluding zero, and the gain grows
+with $k$ (Appendix~\ref{app:robust}). At rung (iv), Task~2's $k$-factor predictor
+denotes this same three-factor solution. For the supervised task the objective is mean squared error on standardised targets, reported as root
+mean squared error so that it stays on the target's own scale and remains comparable across rungs and
+targets. Threshold metrics such as ROC and its area do not apply. Neither task is binary
+classification. Model selection is strictly nested. The inner cross-validation chooses hyperparameters and the best learner per rung, and the untouched outer cross-validation supplies the reported error. We report both train and test error in Table~\ref{tab:ladder} so any over-fitting of the kind the
+timing-only rung shows is exposed.
+
+\section{Results}\label{sec:results}
+The four hypotheses are reported in order. Sections~\ref{sec:h1} to \ref{sec:h3} address the structure question. They cover the dominance of a single factor (H1), the extent to which it is a release-date artefact (H2), and whether the economic benchmarks form a distinct factor once that artefact is removed
+(H3). Section~\ref{sec:clustering} corroborates the structure with clustering, Section~\ref{sec:h4}
+turns to prediction (H4), Section~\ref{sec:explain} opens the best model with explainability and named
+error analysis, and Section~\ref{sec:robustness} collects the robustness checks. Each hypothesis is
+adjudicated against its pre-registered threshold, and the outcome is reported regardless of direction.
+
+\subsection{Dominance of a single factor (H1)}\label{sec:h1}
+Every dimensionality diagnostic points to a dominant capability axis. The first principal component
+alone accounts for 79.4\% of total score variance, and parallel analysis retains a single factor, since
+only the first observed eigenvalue of 9.53 exceeds its random-data 95th percentile of 1.79 while the
+second, at 0.91, already falls below (Appendix Figure~\ref{fig:scree}). In the maximum-likelihood factor
+analysis the first factor holds 74.5\% of common variance, above the 50\% dominance threshold and close
+to the 72\% Kearns reports on a different leaderboard \cite{kearns2026}, so H1 is supported. The share is robust
+to the correlation measure, since a rank-based factor analysis gives 94.5\% and a logit-transformed one
+91.8\%. The Pearson-based headline is therefore the conservative choice (Section~\ref{sec:robustness}).
+
+\subsection{A date-driven artefact (H2)}\label{sec:h2}
+Having established a dominant factor, we next ask whether it reflects stable capability or the passage of
+time. The factor's scores track model release date with a logistic-fit $R^2$ of 0.505, the strongest of
+the three factors against 0.364 and 0.286, so H2(i) is supported and the leading axis of ``capability''
+is substantially a time trend. Consequently, residualising
+every benchmark on release date and re-fitting lowers the first factor's common-variance share from
+74.5\% to 59.6\% (Figure~\ref{fig:loadings}c), a drop of 14.9 percentage points, so date alone accounts
+for about a fifth of the general factor. This point estimate falls just short of the pre-registered fifteen-point threshold. A bootstrap over
+models puts a 95\% interval of $[-5.3, +32.7]$ around it. On the primary grid the drop is therefore
+indistinguishable both from zero and from the threshold, and we report H2(ii) as not met on the point
+estimate without moving the line after seeing the result.
+
+However, the verdict depends on the unit of analysis, and the main text should say so, leaving nothing to the
+appendix alone. Under the registered base-model unit, which keeps one row per model, the drop is 24.1 points
+and clears the threshold. Under the deviated configuration-level primary it is 14.9 points and fails. On
+the 58-model compute-known subsample, date alone gives 16.5 points and also clears it. Two of the
+three specifications pass. We keep the failing configuration-level specification as primary, since it is
+the more conservative reading. The confirmation of a temporal confound then rests on the subsample and the
+deduplicated grid, and does not rest on the primary grid alone. The residual 59.6\% share is what any downstream
+capability claim must contend with.
+
+Moreover, adding training compute to the residualisation does not deepen the correction. On the compute-known
+subsample the date-only drop is 16.5 points, and the joint date-plus-compute drop is smaller at 9.3
+points. That a covariate shrinks the correction is an anomaly, and the likely mechanism is
+collinearity between release date and compute on this small subsample. Later models are also larger, so
+regressing on both splits shared variance between two correlated predictors and leaves a smaller residual
+movement. We read the result as compute adding little beyond date. The date effect stands.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig2_loadings}
+  \caption[Factor loadings, raw and date-residualised]{\textbf{Factor loadings from the three-factor oblimin exploratory factor analysis.}
+  (a) On raw scores the economic benchmarks (bold) load together with the academic core on the leading
+  factor. (b) After residualising on release date, the economic benchmarks concentrate on their own
+  factor F1, with a largest economic cross-loading of 0.38. (c) The first factor's
+  common-variance share falls from 74.5\% to 59.6\% under residualisation, a 14.9-point drop.}
+  \label{fig:loadings}
+\end{figure}
+
+\subsection{Economic distinctiveness (H3)}\label{sec:h3}
+Having removed the temporal confound, we next test whether the economic benchmarks form a distinct
+factor. The registered test for H3 conjoins two conditions. Parallel analysis must retain a factor, and that
+factor's loadings must concentrate discriminantly on the economic block. These two conditions are not
+jointly met, and we report H3 as not supported as registered. Parallel analysis on the residualised
+data retains a single factor, and in that one-factor solution there is no block to separate. The
+discriminant separation appears only when three factors are extracted, an extraction that the
+dimensionality rule does not endorse. Holding H3 to its registration in the same way H2(ii) was held to
+its 15-point line, the retention clause fails, and the pre-registered negative-result clause applies.
+Under a three-factor over-extraction the economic block does separate, and we report that
+pattern as exploratory. All four economic benchmarks load at least 0.40 on a single factor, F1, with
+GDPval at 0.84, Terminal-Bench v2.1 at 1.01, $\tau^3$-Banking at 0.54, and $\tau^2$-Bench at 0.50,
+against a largest economic cross-loading of 0.38 (Table~\ref{tab:loadings}). The mean absolute F1
+loading is 0.72 for economic benchmarks versus 0.32 for the rest. The three factors are strongly
+correlated, at 0.67 between F1 and F3 and 0.72 between F2 and F3, so an oblique rotation is
+appropriate and why the separation is better read as a secondary refinement of one dominant axis, well short of
+independent dimensions. Bootstrap intervals on the economic loadings are wide, spanning 0.10 to 0.78 for
+$\tau^2$-Bench and 0.44 to 0.99 for GDPval, so the exploratory pattern is suggestive though loosely estimated. The economic factor is rescued from being an over-extraction artefact by out-of-sample
+transfer. As Section~\ref{sec:h4} shows, the three-factor representation predicts held-out economic scores better than a single index. Out-of-sample transfer is a stronger dimensionality argument than an in-sample retention rule, so we let the predictive test carry the claim
+the structural test cannot.
+
+\input{tab_loadings}
+
+\subsection{Clustering of models and benchmarks}\label{sec:clustering}
+Because a factor model can impose structure that the raw data do not support, we sought an independent check, and clustering corroborates the low dimensionality without assuming a factor model at all. Grouping models in factor-score space, all three
+algorithms prefer $k=2$ by silhouette, at 0.480 for $k$-means, 0.499 for agglomerative, and 0.467 for
+the Gaussian mixture (Appendix Figure~\ref{fig:clusters}b). The gap statistic increases monotonically in $k$ and identifies no interior optimum, so it is inconclusive on data with a strong general factor and we do not rely on it. The
+two clusters mark capability tiers along one axis of overall strength. A larger, earlier, lower-scoring group
+of 302 models, with median release 2025-09 and mean Intelligence Index 13.7, is separated from a
+smaller, newer, higher-scoring group of 107 models, with median release 2026-03 and mean index 37.1.
+Models separate by how much capability they have, along the same date-driven axis. They do not separate by which kind
+they have (Appendix Figure~\ref{fig:clusters}a). Clustering the benchmarks by correlation distance places ten of
+twelve, including three of four economic benchmarks, in one block, with $\tau^2$-Bench and IFBench
+branching separately (Appendix Figure~\ref{fig:dendro}).
+
+\FloatBarrier
+\subsection{Predictive validity (H4)}\label{sec:h4}
+However, structural separation alone does not make the economic factor useful, so we ask whether it predicts
+held-out economic performance better than a general index. Across the predictor ladder a single
+mean-score index is already a strong baseline (economic-block test RMSE 0.474, $R^2$ 0.771), yet the
+$k$-factor representation improves on it to RMSE 0.433 and $R^2$ 0.808, and adding covariates does not
+help further (Table~\ref{tab:ladder}, Figure~\ref{fig:pred}a). The first factor alone predicts poorly at
+RMSE 0.950, locating the economic signal in the secondary factors, where the over-extraction placed
+it. Bootstrapping $\Delta\mathrm{MSE}$ over the pooled out-of-fold errors gives a pooled improvement of
+$+0.037$ with a 95\% interval of $[+0.019, +0.055]$. Because that resample includes near-duplicate
+settings of the same base model, we re-run it on the deduplicated grid of 89 distinct models, where the
+improvement is $+0.038$ with $[+0.020, +0.056]$ (Appendix~\ref{app:robust}). This model-level bootstrap
+carries the inference. Three of the four economic benchmarks improve individually, GDPval by $+0.026$
+with $[+0.010, +0.044]$, Terminal-Bench v2.1 by $+0.028$ with $[+0.001, +0.056]$, and $\tau^3$-Banking by
+$+0.056$ with $[+0.008, +0.103]$, while $\tau^2$-Bench's interval includes zero
+(Table~\ref{tab:h4}, Figure~\ref{fig:pred}b). The per-target mean of $+0.031$ is reported as a descriptive
+spread, since a percentile interval over four positive means cannot include zero by construction. H4 is
+therefore supported by the pre-registered rule of a pooled interval excluding zero with a majority of
+targets favouring the multi-factor model. The effect is nonetheless modest. An improvement of 0.037 sits
+on top of a single index that already explains 77\% of economic-block variance, so the multi-factor gain
+is incremental, and it does not transform the model ranking. It survives leave-one-benchmark-out validation, and rewards
+transfer across constructs and penalises memorisation. The one exception, $\tau^2$-Bench, has the widest
+interval, so its null reflects limited coverage as much as an absence of signal.
+
+\begin{figure}[!tb]
+  \centering
+  \includegraphics[width=\linewidth]{fig4_prediction}
+  \caption[Predictive validity under the LOBO protocol]{\textbf{Predictive validity under the LOBO protocol.} (a) Test RMSE by predictor-ladder rung,
+  for the economic block (red) and all twelve targets (grey). The $k$-factor rungs beat both the single
+  index and the first-factor-only rung. (b) Bootstrap $\Delta\mathrm{MSE}$ (single index minus $k$
+  factors) with 95\% intervals, where positive favours the multi-factor representation. (c) SHAP
+  importances for the GDPval model, showing the agentic factor F1 and the reasoning flag dominating.}
+  \label{fig:pred}
+\end{figure}
+
+\input{tab_ladder}
+\input{tab_h4}
+
+\FloatBarrier
+\subsection{Explainability and error analysis}\label{sec:explain}
+To interpret the predictive gain, we examine the best model on the largest economic target. GDPval predicted by a $k$-factor ridge with
+out-of-fold $R^2$ 0.88, permutation importance and SHAP attribution \cite{lundberg2017} agree that the
+agentic factor F1 is the dominant predictor, followed by the reasoning flag and the hard-reasoning
+factor F3, with scale and open-weights status contributing little (Figure~\ref{fig:pred}c). The
+diagnostics are clean, with the predicted-versus-observed plot lying on the identity line and residuals
+showing no systematic trend (Appendix Figure~\ref{fig:diag}a,b). The largest residuals are interpretable outliers.
+They include a non-reasoning variant of a frontier model that outperforms its
+economic prediction, Grok 4.3 Non-reasoning at $+1.14$, and two models that under-perform theirs
+(Appendix Figure~\ref{fig:diag}c), a pattern consistent with GDPval rewarding agentic behaviour that the other
+benchmarks capture only indirectly.
+
+\subsection{Robustness}\label{sec:robustness}
+Finally, the headline structure is stable under design perturbations. Full tables and a deviations-from-design
+account appear in Appendix~\ref{app:deviations} and~\ref{app:robust}. The most
+consequential check is the registered configuration-versus-deduplication comparison. Collapsing to one
+row per base model guards against near-duplicate configurations inflating correlations. It raises the
+first-factor share to 90.2\% and the date-residualisation drop to 24.1 points, so the configuration-level
+analysis is the conservative choice. Replacing Pearson with rank-based or logit-transformed correlations raises
+the first-factor share to 94.5\% and 91.8\%, so H1 is not an artefact of the correlation
+metric. On the compute-known subsample the date-only residualisation drops the share by 16.5 points, and
+adding log-compute gives a smaller drop. The predictor ladder's ordering,
+with the single index strong, the first factor alone weak, and the $k$ factors best, holds on both the
+economic block and all twelve targets (Table~\ref{tab:ladder}). Selected hyperparameters (Table~\ref{tab:hyper}) are pluralities across targets, and the H4 verdict does not depend on the exact regularisation strength.
+
+\section{Discussion and conclusion}\label{sec:discussion}
+The two tasks answer the question in the title. The frontier benchmark battery is governed by one
+dominant capability axis, a first factor holding 74.5\% of common variance. However, that axis is
+substantially a release-date artefact. Models improve on everything at once as they get newer, and
+partialling date out removes about a fifth of the general factor. Economic benchmarks are
+not a separate kind of capability in the raw data. They sit inside the general cloud and separate into
+their own factor only after the temporal axis is removed, and only under an over-extraction that a
+strict dimensionality rule would not endorse. The secondary economic factor still carries out-of-sample
+information, predicting held-out economic scores better than a single general index on three of four
+benchmarks. The registered negative-result clause anticipated this outcome. Economic validity is
+therefore limited. A date-driven progress factor accounts for most of the economic signal, and the
+benchmarks add a modest increment beyond it.
+
+The reading matters for how leaderboards should be used. A single intelligence index captures most of
+what distinguishes models and is a defensible first-order summary. The residual economic signal is the
+part most relevant to claims about real-world professional value, so reporting economic benchmarks
+separately is justified. However, small economic-benchmark gaps between contemporaneous frontier models
+call for caution. Most of the apparent spread is the shared time trend and carries little distinct
+economic ability. The evidence reinforces the broader call for psychometric scrutiny of AI benchmarks
+\cite{bean2025,kearns2026} and the warning that temporal effects are a first-order confound
+\cite{akhtar2026}.
+
+Moreover, the result suggests how new economic benchmarks should be validated. When most of the spread on a
+benchmark is the shared date trend, the benchmark's value for distinguishing contemporaneous models
+depends on the variance it adds once that trend is removed. A builder who wants to show that a new
+economic suite measures something distinct can apply the two tests here directly. Among models released
+in the same window, check that the benchmark's residualised loading separates from the general factor
+and that it improves out-of-sample prediction of held-out economic tasks. This adds a predictive lens to
+the review-based \cite{bean2025} and saturation-based \cite{akhtar2026} approaches.
+
+\subsection{Limitations}\label{sec:limitations}
+Four limitations bound the claims. The design is exploratory, so it fits no confirmatory measurement model, and the economic
+factor appears only under an over-extraction relative to parallel analysis, so a pre-registered
+confirmatory model on fresh data would test it more strictly. The analysis is observational. The residualisation identifies date as a strong correlate of the general factor, but does not establish that date causes the shared variance, since unobserved common causes such as shared training data across
+contemporaneous models could produce the same pattern. Coverage is uneven, the economic benchmarks being
+scored on far fewer models than the academic core, so the complete-case grid of 96 models is small and
+the economic results carry wider uncertainty than the dense-grid clustering. Finally the results
+describe one leaderboard on one date and will shift as new models arrive, a risk we mitigate with a
+hash-pinned, fully reproducible snapshot.
+
+Finally, the limitations map onto the work we would pursue next. The most immediate step is a
+confirmatory factor analysis on a fresh leaderboard snapshot, which would test the over-extracted
+economic factor against a pre-specified measurement model, moving beyond the exploratory one used here. A second
+direction is to link benchmark scores to external measures of professional adoption, such as
+task-completion rates in deployed settings, which would move the validity argument from internal
+structure to external economic impact. Finally, the public snapshot omits per-task token and turn counts. Collecting them would let rung~(v) model cost and effort directly, replacing the proxy covariates used here and sharpening the test of whether economic capability is separable from the resources a model
+spends to achieve it.
+
+\subsection{Conclusion}\label{sec:conclusion}
+Treating a frontier-model leaderboard as a psychometric measurement problem, we asked whether economic
+benchmarks measure one capability or many, and the answer is neither extreme. They are dominated by a
+single, largely date-driven general factor, yet they retain a small, real, and out-of-sample-predictive
+economic component. Economic benchmarks earn their place on the leaderboard as a modest correction to a
+general progress score, though they fall short of an independent axis of ability. We pre-register four quantitative tests. We report the near-threshold and not-supported verdicts as plainly as the confirmed ones, document every deviation from the plan, and pin every input. Throughout, we have tried to make this a
+transparent and reproducible case study in the construct validity of AI evaluation.

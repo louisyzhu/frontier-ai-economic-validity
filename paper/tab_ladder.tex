@@ -1,0 +1,21 @@
+\begin{table}[!tb]
+\centering
+\caption[Predictor-ladder cross-validated errors]{\textbf{Predictor-ladder cross-validated errors (economic block).} Train and test RMSE are on
+standardised targets and test $R^2$ is out-of-fold. The best learner per rung is shown. The $k$-factor
+rungs (iv, v) achieve the lowest test error. Errors are pooled over the five outer folds; the uncertainty
+on the key rung~(ii)-versus-(iv) contrast is the bootstrap $\Delta\mathrm{MSE}$ interval in
+Table~\ref{tab:h4}, which excludes zero.}
+\label{tab:ladder}
+\small
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Rung & Best learner & Train RMSE & Test RMSE & Test $R^2$ \\
+\midrule
+(i) timing / scale & random forest & 0.521 & 0.741 & 0.459 \\
+(ii) mean index & ridge & 0.463 & 0.474 & 0.771 \\
+(iii) first factor & elastic net & 0.933 & 0.950 & 0.110 \\
+(iv) $k$ factors & ridge & 0.410 & 0.433 & 0.808 \\
+(v) $k$ factors + covariates & ridge & 0.391 & 0.438 & 0.800 \\
+\bottomrule
+\end{tabular}
+\end{table}

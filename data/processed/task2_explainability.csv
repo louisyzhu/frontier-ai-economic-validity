@@ -1,0 +1,13 @@
+benchmark,factor,perm_importance,perm_sd,ridge_coef
+GDPval (Elo),F1,8.597,0.9,0.947
+GDPval (Elo),F2,4.308,0.419,0.822
+GDPval (Elo),F3,1.603,0.203,0.631
+Terminal-Bench v2.1,F1,8.991,0.909,0.97
+Terminal-Bench v2.1,F2,3.636,0.354,0.755
+Terminal-Bench v2.1,F3,1.977,0.232,0.7
+τ³-Banking,F1,7.21,0.791,0.869
+τ³-Banking,F2,3.17,0.31,0.705
+τ³-Banking,F3,2.474,0.304,0.781
+τ²-Bench,F1,6.396,0.679,0.818
+τ²-Bench,F2,3.767,0.396,0.767
+τ²-Bench,F3,0.937,0.129,0.478

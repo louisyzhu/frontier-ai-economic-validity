@@ -1,0 +1,6 @@
+rung,learner,selected_hyperparameters,modal_agreement_all12
+i_date,rf,"{""max_depth"": 4, ""min_samples_leaf"": 3, ""n_estimators"": 300}",8/12
+ii_meanidx,ridge,"{""alpha"": 0.03}",6/12
+iii_f1,elasticnet,"{""alpha"": 0.03, ""l1_ratio"": 0.2}",5/12
+iv_kfac,ridge,"{""alpha"": 0.03}",6/12
+v_kfac_cov,ridge,"{""alpha"": 1}",6/12

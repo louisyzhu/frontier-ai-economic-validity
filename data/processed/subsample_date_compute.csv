@@ -1,0 +1,4 @@
+model,n,f1_share,drop_vs_raw_pp
+raw,58,66.32,0.0
+date_only,58,49.84,16.48
+date_plus_compute,58,57.05,9.27

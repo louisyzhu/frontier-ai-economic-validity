@@ -1,0 +1,6 @@
+grid,n,baseline,kmodel,dMSE,ci_lo,ci_hi,excludes_zero
+deduplicated_base,89,ii_meanidx,iv_kfac_k3,0.0378,0.0198,0.0561,True
+deduplicated_base,89,ii_meanidx,gdpval_elo,0.0039,-0.0087,0.0162,False
+deduplicated_base,89,ii_meanidx,terminalbenchV21,0.037,0.0185,0.057,True
+deduplicated_base,89,ii_meanidx,tauBanking,0.0721,0.0236,0.1243,True
+deduplicated_base,89,ii_meanidx,tau2,0.0381,-0.0101,0.0839,False

@@ -1,0 +1,15 @@
+benchmark,column,block,n_models,in_primary,role
+GDPval (Elo),gdpval_elo,Economic,117,True,primary
+Terminal-Bench v2.1,terminalbenchV21,Economic,121,True,primary
+τ³-Banking,tauBanking,Economic,112,True,primary
+τ²-Bench,tau2,Economic,428,True,primary
+APEX-Agents,apexAgents,Economic,26,False,dropped (<60)
+GPQA Diamond,gpqa,Academic,513,True,primary
+HLE,hle,Academic,509,True,primary
+AA-Omniscience,omniscience,Academic,418,True,primary
+MMMU-Pro,mmmuPro,Academic,204,False,sensitivity
+SciCode,scicode,Scientific-coding,507,True,primary
+CritPt,critpt,Scientific-coding,422,True,primary
+AA-LCR,lcr,Long-context,441,True,primary
+IFBench,ifbench,Instruction-following,437,True,primary
+Terminal-Bench Hard,terminalbenchHard,Scientific-coding,421,True,primary

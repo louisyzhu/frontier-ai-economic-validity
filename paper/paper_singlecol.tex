@@ -1,0 +1,71 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,top=0.85in,bottom=0.85in,left=0.88in,right=0.88in]{geometry}
+% ---- Times New Roman (text + math) ----
+\usepackage{newtxtext}
+\usepackage{newtxmath}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{{figures/}{../figures/}{./}}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{microtype}
+% ---- clickable numeric citations + bookmarks ----
+\usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue,linktoc=all]{hyperref}
+\usepackage{url}
+\usepackage{seqsplit}
+\usepackage{float}
+\usepackage[section]{placeins}
+% ---- float placement: let a figure and its two tables group near their
+%      in-text references instead of drifting to the bottom of a later page ----
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{4}
+\setcounter{bottomnumber}{1}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.5}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.8}
+% ---- page-fit: modest spacing, discourage orphan/widow lines ----
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\clubpenalty=10000
+\widowpenalty=10000
+
+\setlength{\parskip}{0.15em}
+\setlength{\parindent}{1.2em}
+% ---- front-matter lists: keep the standard article/tocloft look (bold section
+%      titles + bold page numbers, regular-weight subsections, dot leaders), with
+%      only a modest before-skip tightening so ToC + LoF + LoT fit one page ----
+\usepackage{tocloft}
+\setlength{\cftbeforesecskip}{2pt}
+\setlength{\cftbeforesubsecskip}{1pt}
+\setlength{\cftbeforefigskip}{1pt}
+\setlength{\cftbeforetabskip}{1pt}
+\renewcommand{\cftsecfont}{\bfseries}
+\renewcommand{\cftsecpagefont}{\bfseries}
+\title{}\author{}\date{}
+\begin{document}
+\input{frontmatter}
+
+\newpage
+{\setlength{\parskip}{0pt}
+\tableofcontents
+\vspace{0.6em}
+\listoffigures
+\vspace{0.6em}
+\listoftables
+}
+
+\newpage
+\input{body}
+
+\newpage
+\phantomsection
+\addcontentsline{toc}{section}{References}
+\input{thebibliography}
+
+\clearpage
+\input{appendix}
+
+\end{document}

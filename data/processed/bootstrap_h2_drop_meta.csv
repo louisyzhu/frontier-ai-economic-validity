@@ -1,0 +1,4 @@
+metric,value
+P_drop_ge_15,0.346
+B_valid,2000.0
+threshold_pp,15.0

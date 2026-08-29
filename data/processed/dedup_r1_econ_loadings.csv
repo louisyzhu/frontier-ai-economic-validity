@@ -1,0 +1,13 @@
+benchmark,config_econF1,dedup_econF1
+gpqa,0.0063,-0.067
+hle,0.3192,0.4715
+omniscience,0.689,0.7642
+tau2,0.4991,0.6025
+ifbench,-0.1294,0.0642
+lcr,0.344,0.4526
+scicode,0.2622,0.2399
+critpt,0.0153,0.0658
+terminalbenchHard,0.8178,0.8798
+gdpval_elo,0.8418,0.8587
+terminalbenchV21,1.0063,1.0049
+tauBanking,0.542,0.6335

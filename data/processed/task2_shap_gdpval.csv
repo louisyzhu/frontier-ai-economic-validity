@@ -1,0 +1,8 @@
+feature,mean_abs_shap
+F1 (economic/agentic),0.375
+reasoning,0.366
+F3 (reasoning),0.195
+log-params,0.129
+F2 (academic),0.124
+params-missing,0.025
+open-weights,0.002

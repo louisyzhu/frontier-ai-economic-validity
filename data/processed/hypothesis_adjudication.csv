@@ -1,0 +1,5 @@
+hypothesis,test,value,result
+H1 Dominance,first-factor communal share >50%,74.5%,SUPPORTED
+H2(i) date-driven,dominant factor logistic-fit R²≥0.30 & strongest,logistic-R²=0.505 (max; OLS-R²=0.477),SUPPORTED
+H2(ii) share drop,residualisation drops share ≥15pp,"14.9pp point; boot 95% CI [-5.3,+32.7] straddles 15; same-58 date-only 16.5pp",INDISTINGUISHABLE FROM THRESHOLD (P(>=15)=0.35)
+H3 econ distinct,parallel analysis retains factor AND loadings >=0.40 concentrate on econ block (conjoint),"PA retains k=1 (retention clause fails); under exploratory k=3 all 4 load >=0.40, max cross 0.38",NOT SUPPORTED AS REGISTERED (exploratory + predictive support via H4)

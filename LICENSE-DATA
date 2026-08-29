@@ -1,0 +1,38 @@
+Data licence and attribution
+============================
+
+CODE in this repository -- the notebook, and any scripts -- is MIT licensed; see LICENSE.
+This file covers the DATA.
+
+DERIVED DATA: Creative Commons Attribution 4.0 International (CC BY 4.0)
+------------------------------------------------------------------------
+Every table produced by this project's own analysis -- all of data/processed/ and
+data/raw/aa_models_raw_parsed.csv -- is released by Louis Yiven Zhu under CC BY 4.0.
+Full text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+To reuse: cite the paper and this repository.
+
+REDISTRIBUTED SOURCE SNAPSHOTS
+------------------------------
+data/raw/ also contains two verbatim third-party snapshots, redistributed here so the
+analysis is reproducible from a fixed dataset. They are NOT covered by the CC BY 4.0
+grant above; each keeps its own upstream terms.
+
+1. data/raw/epoch_notable_ai_models_snapshot.csv
+   Source:  Epoch AI, "Notable AI Models" -- https://epoch.ai/data/notable_ai_models.csv
+   Licence: CC BY 4.0 (upstream). Attribution to Epoch AI is required and is preserved
+            here and in the paper. Snapshot date and SHA-256 are recorded in
+            data/raw/epoch_snapshot_manifest.json.
+
+2. data/raw/aa_leaderboards_models_snapshot.html
+   Source:  Artificial Analysis, Models Leaderboard --
+            https://artificialanalysis.ai/leaderboards/models
+   Terms:   Redistributed under Artificial Analysis's site terms, as a dated verbatim
+            snapshot for verification of the published results. Artificial Analysis is
+            the source of all capability and price figures derived from it, and is
+            credited as such in the paper. Snapshot timestamp and SHA-256 are recorded
+            in data/raw/aa_snapshot_manifest.json. Anyone wishing to reuse this data
+            beyond verifying these results should obtain it from Artificial Analysis
+            directly and observe their terms.
+
+Neither upstream source endorses this work or its conclusions.

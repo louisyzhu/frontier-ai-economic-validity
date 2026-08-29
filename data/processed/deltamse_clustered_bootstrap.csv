@@ -1,0 +1,3 @@
+method,dMSE,ci_lo,ci_hi,n_units,excludes_zero
+pooled_model_bootstrap,0.037,0.019,0.055,96,True
+target_clustered_bootstrap,0.0313,0.0257,0.0406,4,True

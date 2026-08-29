@@ -1,0 +1,10 @@
+{
+  "source": "Artificial Analysis \u2014 Models Leaderboard",
+  "url": "https://artificialanalysis.ai/leaderboards/models",
+  "extraction_timestamp_utc": "2026-07-06T15:17:51Z",
+  "http_status": 200,
+  "bytes": 4477421,
+  "sha256": "6f19f8f08befaaf14cb2d9952e379404c39f246b52d7ae4d1c2aa44795404de6",
+  "extraction_method": "public-page extraction (Next.js RSC flight payload embedded in HTML)",
+  "note": "AA Data API (/api/v2/...) requires an API key (401); public leaderboard page carries the full model array in the server-rendered React flight stream. Page-extraction route per research design \u00a77 access order fallback."
+}
