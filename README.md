@@ -117,10 +117,19 @@ Neither upstream source endorses this work or its conclusions.
 
 ## How to cite
 
-Cite the paper (arXiv identifier to be added once the preprint is posted), and cite
-this repository for the code and pinned data:
+Cite the paper, [arXiv:2608.29420](https://arxiv.org/abs/2608.29420), and cite this
+repository for the code and pinned data:
 
 ```bibtex
+@misc{zhu2026onecapability,
+  author = {Zhu, Louis Yiven},
+  title  = {One Capability or Many? Testing the Economic Validity of Frontier AI Evaluation},
+  year   = {2026},
+  eprint = {2608.29420},
+  archivePrefix = {arXiv},
+  url    = {https://arxiv.org/abs/2608.29420}
+}
+
 @misc{onecapability_code,
   author = {Zhu, Louis Yiven},
   title  = {One Capability or Many? Testing the Economic Validity of Frontier AI Evaluation
