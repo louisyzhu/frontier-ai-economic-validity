@@ -153,7 +153,7 @@ the exact bytes so results are stable regardless of live-page drift.
 - **548** model configurations parsed → **421** retained (≥8 of 13 kept benchmarks).
 - **12 primary benchmarks** across 5 taxonomy blocks (Economic, Academic, Scientific-coding,
   Long-context, Instruction-following); MMMU-Pro held for sensitivity; APEX-Agents dropped (<60 models).
-- Economic-dense subset: **103** models carry GDPval Elo + Terminal-Bench v2.1 + τ³-Banking (Task-2 grid).
+- Economic-dense subset: **103** models pass the density gate, carrying all three sparsely scored economic benchmarks (GDPval Elo, Terminal-Bench v2.1, τ³-Banking). Task 2 runs on the **96**-model complete-case grid, which carries all twelve primary benchmarks.
 
 ## Status
 - [x] **Phase 1** — extraction, access & licensing audit, density gate → **PASS**
